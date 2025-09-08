@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .animate-page-enter {
+    @apply animate-scale-in;
+  }
+  .animate-tab-enter-left {
+    @apply animate-slide-in-left;
+  }
+  .animate-tab-enter-right {
+    @apply animate-slide-in-right;
+  }
+}
+
+/* Hide scrollbars but keep scroll functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
