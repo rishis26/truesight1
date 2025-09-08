@@ -146,31 +146,14 @@ const IPGeolocation = React.forwardRef(function IPGeolocation({ onResult }, ref)
 
       {result && (
         <GlassCard variant="medium" elevation={2} className="p-3 sm:p-4" glow={true}>
-          <div className="space-y-1">
+          <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="text-emerald-600 dark:text-emerald-400 font-semibold text-sm">✓</span>
-              <div className="text-gray-900 dark:text-gray-100 font-medium text-base sm:text-lg">
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-300 text-sm font-semibold">✓</span>
+              <div className="text-gray-900 dark:text-gray-100 font-semibold text-base sm:text-lg">
                 {result.city}, {result.region}, {result.country}
               </div>
             </div>
             <div className="text-xs sm:text-sm text-gray-700 dark:text-gray-200">ISP: {result.isp}</div>
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap gap-2 text-[11px] sm:text-xs">
-                <span className={`px-2 py-0.5 rounded-full border ${result.proxy ? 'bg-red-100 border-red-300 text-red-700 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700' : 'bg-green-100 border-green-300 text-green-700 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700'}`}>Proxy: {result.proxy ? 'Yes' : 'No'}</span>
-                <span className={`px-2 py-0.5 rounded-full border ${result.mobile ? 'bg-amber-100 border-amber-300 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700' : 'bg-green-100 border-green-300 text-green-700 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700'}`}>Mobile: {result.mobile ? 'Yes' : 'No'}</span>
-                <span className={`px-2 py-0.5 rounded-full border ${result.hosting ? 'bg-purple-100 border-purple-300 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700' : 'bg-green-100 border-green-300 text-green-700 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700'}`}>Hosting: {result.hosting ? 'Yes' : 'No'}</span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <a
-                  href={`https://www.google.com/maps?q=${result.lat},${result.lon}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm"
-                >
-                  Open in Google Maps
-                </a>
-              </div>
-            </div>
             {result.lat !== undefined && result.lon !== undefined && (
               <div className="mt-2">
                 <a
@@ -190,11 +173,19 @@ const IPGeolocation = React.forwardRef(function IPGeolocation({ onResult }, ref)
                 </a>
               </div>
             )}
-            {(result.mobile || result.proxy || result.hosting) && (
-              <div className="text-[11px] text-amber-600 dark:text-amber-400">
-                Note: IP appears to be {result.mobile ? 'mobile network' : result.proxy ? 'proxy/VPN' : 'hosting provider'} — city-level accuracy may be reduced.
+            {result.lat !== undefined && result.lon !== undefined && (
+              <div>
+                <a
+                  href={`https://www.google.com/maps?q=${result.lat},${result.lon}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mt-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm"
+                >
+                  Open in Google Maps
+                </a>
               </div>
             )}
+            {/* Removed mobile/proxy/hosting note */}
             <div className="text-[11px] text-gray-600 dark:text-gray-300">
               Lat: {result.lat}, Lng: {result.lon} • Source: {result.provider}
               {result.refined && result.displayName ? ` • Refined: ${result.displayName}` : ''}

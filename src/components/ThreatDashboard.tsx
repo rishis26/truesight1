@@ -185,11 +185,11 @@ export function ThreatDashboard({ analyses }: ThreatDashboardProps) {
           description="Confirmed genuine threats detected"
         />
         <KpiCard
-          title="Hoax Detected"
+          title="Hoaxes Detected"
           value={stats.hoax}
-          icon="✅"
-          color="green"
-          description="Hoax threats identified"
+          icon="⚠️"
+          color="orange"
+          description="Count of identified hoax reports"
         />
         <KpiCard
           title="Avg Confidence"
@@ -262,17 +262,7 @@ export function ThreatDashboard({ analyses }: ThreatDashboardProps) {
       </div>
 
       {/* Row 2.5: IP Geolocation Signals (if any) */}
-      {ipFlags.any && (
-        <GlassCard variant="medium" elevation={2} className="p-4 sm:p-6" glow={true}>
-          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4 sm:mb-2">IP Geolocation Signals</h3>
-          <div className="flex flex-wrap gap-3 text-xs sm:text-sm">
-            <span className={`px-3 py-1 rounded-full border ${ipFlags.proxy ? 'bg-red-100 border-red-300 text-red-700 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700' : 'bg-green-100 border-green-300 text-green-700 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700'}`}>Proxy/VPN observed: {ipFlags.proxy ? 'Yes' : 'No'}</span>
-            <span className={`px-3 py-1 rounded-full border ${ipFlags.mobile ? 'bg-amber-100 border-amber-300 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700' : 'bg-green-100 border-green-300 text-green-700 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700'}`}>Mobile network: {ipFlags.mobile ? 'Yes' : 'No'}</span>
-            <span className={`px-3 py-1 rounded-full border ${ipFlags.hosting ? 'bg-purple-100 border-purple-300 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700' : 'bg-green-100 border-green-300 text-green-700 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700'}`}>Hosting provider: {ipFlags.hosting ? 'Yes' : 'No'}</span>
-          </div>
-          <p className="mt-3 text-xs text-gray-600 dark:text-gray-400">IPs flagged as proxy/VPN, mobile networks, or hosting providers often have less accurate city-level geolocation.</p>
-        </GlassCard>
-      )}
+      {/* Removed IP Geolocation Signals section as requested */}
 
       {/* Row 3: Recent Analyses Table */}
       {analyses.length > 0 && (
