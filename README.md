@@ -18,24 +18,32 @@ npm run dev
 ```
 
 ### API Configuration
-Before using the full functionality, you need to configure your OpenAI API key:
-
-1. **Get API Key (OpenAI)**: Create an API key from your OpenAI account
-2. **Create .env file**: Copy `env.example` to `.env`
-3. **Add your key**: Set `VITE_OPENAI_API_KEY` (and optional model/limits)
-4. **Restart server**: `npm run dev`
-
-Environment variables used by the app:
+This project supports multiple providers. Configure what you need via `.env`:
 
 ```env
-VITE_OPENAI_API_KEY=sk-...
-VITE_OPENAI_MODEL=gpt-4o-mini
-VITE_USE_OPENAI_WHISPER=true
-VITE_DEFAULT_AI_PROVIDER=openai
+# ---------- AI (Groq primary, DeepSeek fallback) ----------
+VITE_GROQ_API_KEY=...                 # required for Groq
+VITE_GROQ_MODEL=llama-3.1-70b-versatile
+VITE_GROQ_BASE_URL=https://api.groq.com/openai/v1
+
+VITE_DEEPSEEK_API_KEY=...             # optional fallback
+VITE_DEEPSEEK_MODEL=deepseek-chat
+VITE_DEEPSEEK_BASE_URL=https://api.deepseek.com
+
+VITE_DEFAULT_AI_PROVIDER=groq         # groq | deepseek
+
+# ---------- IP Geolocation ----------
+VITE_IPINFO_TOKEN=...                 # ipinfo token (preferred)
+
+# ---------- App limits ----------
 VITE_MAX_FILE_SIZE_MB=50
 VITE_MAX_CONCURRENT_ANALYSES=5
 VITE_API_TIMEOUT_MS=30000
 ```
+
+Notes:
+- If no AI keys are present, the app falls back to a local heuristic model for text analysis.
+- For IP geolocation, ipinfo is used first. If no token is present, a low‑rate unauthenticated call is attempted for development.
 
 Notes:
 - Without API keys the app falls back to local heuristic analysis (reduced accuracy).
@@ -66,8 +74,8 @@ npm run build
 
 ### Core Capabilities
 - **Multi-format File Processing**: Support for .eml, .wav, .mp3, .m4a, .ogg, .pdf, .docx files
-- **Real AI Analysis (OpenAI)**: GPT-4o-mini–powered threat understanding and scoring
-- **Advanced Audio Processing**: OpenAI Whisper API for accurate speech-to-text transcription
+- **AI Analysis (Groq/DeepSeek)**: Structured JSON output for confidence, classification and actions
+- **Advanced Audio Processing**: Whisper (optional via OpenAI SDK) for accurate speech-to-text transcription
 - **Intelligent Document Processing**: PDF and Word document text extraction with AI analysis
 - **Email Analysis**: Header inspection, sender reputation scoring, spoofing detection
 - **Real-time Dashboard**: Comprehensive threat monitoring and statistics
@@ -114,7 +122,7 @@ npm run build
 - **UI Framework**: Custom Glass Morphism Design System
 - **Build Tool**: Vite with production optimization
 - **Server**: Express.js for production hosting
-- **AI Provider**: OpenAI (GPT-4o-mini for analysis; Whisper for transcription)
+- **AI Provider**: Groq (primary), DeepSeek (fallback), OpenAI Whisper (optional transcription)
 - **Document Processing**: pdf-parse, mammoth.js
 - **File Processing**: Native Web APIs + specialized parsers
 - **Deployment**: Static hosting ready with fallback server
@@ -242,19 +250,40 @@ CMD ["npm", "start"]
 
 ## 🔄 How Analysis Works (High-Level)
 
-1. Text from user/email/document or audio transcription is collected
-2. If OpenAI is configured, the system sends a structured prompt requesting JSON (confidence, classification, threatLevel, summary, reasons, recommendations)
-3. The response is parsed into a `ThreatAnalysis`
-4. If the API is unavailable, a local heuristic engine scores semantic, sentiment, and pattern signals, then generates a bullet-point summary and recommendations
-5. Results are displayed in the UI, saved in in-memory history, and visualized on the dashboard
+1. Text from user/email/document (or audio transcription) is collected in the UI
+2. The AI service is chosen in this order: Groq → DeepSeek → Local fallback
+3. A structured prompt requests strict JSON with:
+   - confidence (0–100), classification (genuine|hoax|uncertain), threatLevel (low|medium|high|critical)
+   - summary (bullet points), reasons, recommendations and multi‑dimensional scores
+4. The JSON is parsed into `ThreatAnalysis` and rendered in the UI
+5. If both providers are unavailable, a local heuristic engine scores semantic/sentiment/pattern signals and generates a summary
+6. Results are displayed, added to recent history, and visualized on the dashboard
+
+### IP Geolocation Flow (ipinfo)
+1. User pastes an IP into the IP Geolocation box and clicks `Locate`
+2. The app calls `https://ipinfo.io/<ip>?token=...`
+3. Response fields used:
+   - `city`, `region`, `country` (converted to full name when possible)
+   - `loc` → split into `lat`, `lon`
+   - `org` (ISP / AS info)
+   - `privacy` → proxy/vpn/tor/hosting flags
+4. UI shows a compact card with badges, a Google Maps link, and a preview map box
+5. The full geolocation object is attached to the analysis metadata and appears in exports
 
 ## ✨ Recent Changes
 
-- OpenAI-only integration (simplified configuration)
-- Bullet-point summaries for faster decision-making
+- Switched analysis stack to Groq (DeepSeek fallback)
+- Added ipinfo-powered IP geolocation with badges and Google Maps preview
+- Compact geolocation UI and mobile polish (Shortcuts hidden on small screens)
+- Safer Vite config (no global process.env exposure)
 - Page-load and tab transition animations
-- Removed "AI API Ready" badge for a cleaner UI
-- Improved fallback scoring thresholds and patterns
+
+## 🧪 End-to-End Workflow Summary
+1. Operator pastes text and optional IP into Text Analysis
+2. Clicks `Locate` (for IP) and `Analyze Text`
+3. Geolocation card displays city/region/country, flags, coordinates, and a Google Maps preview/link
+4. AI returns structured threat analysis → UI shows summary, confidence, badges and recommendations
+5. Export (JSON/Text/CSV/PDF) includes the `ip_geolocation` section when present
 
 ## 🔮 Future Enhancements (Phase 3)
 
